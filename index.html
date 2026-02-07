@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wait... I have a question</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            margin: 0;
+            overflow: hidden; /* Stops the screen from growing if the button moves */
+            touch-action: manipulation; /* Prevents zooming on fast taps */
+        }
+
+        #no-btn {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 40;
+            touch-action: none;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid white;
+            height: 350px;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center">
+
+    <div id="main-card" class="glass p-8 rounded-3xl shadow-2xl text-center max-w-xs w-full mx-4 transition-all duration-500">
+        <div id="image-container" class="mb-4 text-6xl">💞</div>
+        
+        <h1 id="question" class="text-2xl font-bold text-pink-600 mb-8 leading-tight h-[100px]">
+            Do you love me baby girl?
+        </h1>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button id="yes-btn" class="bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-3 px-10 rounded-full shadow-lg transform transition-all active:scale-95 z-50 order-1">
+                YES
+            </button>
+
+            <button id="no-btn" class="bg-gradient-to-r from-rose-400 to-red-500 text-white font-bold py-3 px-10 rounded-full shadow-lg order-2">
+                No
+            </button>
+        </div>
+    </div>
+
+    <div id="success" class="hidden fixed inset-0 flex flex-col items-center justify-center text-center bg-pink-50/90 z-[100]">
+        <h1 class="text-6xl font-bold text-pink-600 animate-bounce">Yay! 🥰</h1>
+        <p class="text-pink-500 mt-4 text-xl font-bold">I KNEW IT!</p>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
+        const questionText = document.getElementById('question');
+        const successDiv = document.getElementById('success');
+        
+        let yesScale = 1;
+        let phraseIndex = 0;
+
+        const phrases = [
+            "Are you joking? 💘",
+            "Be serious! Try again 🥀",
+            "Think again! 🧐",
+            "Wrong button! 😅",
+            "You're soooooo mean! 😭",
+            "Click Yes Already I know!",
+            "You don't mean it right?",
+            "Look at that green button! 💚"
+        ];
+
+        function teleportButton() {
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            
+            // Padding ensures it doesn't touch the very edge of the screen
+            const padding = 200; 
+            
+            // Calculate the safe zone for button placement
+            const maxX = window.innerWidth - padding;
+            const maxY = window.innerHeight - padding;
+
+            // Generate random coordinates within safe bounds
+            // Ensure coordinates are between padding and max values
+            const x = Math.random() * 200 - Math.random() * 200;
+            const y = Math.random() * 200 - Math.random() * 200;
+
+            // Apply styles
+            noBtn.style.position = 'relative';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+
+            console.log(x,y)
+            noBtn.style.margin = '0';
+
+            // Logic updates
+            questionText.innerText = phrases[phraseIndex];
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+
+        // Trigger on click, hover, AND touch
+        noBtn.addEventListener('click', teleportButton);
+        noBtn.addEventListener('mouseover', teleportButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents mobile "ghost clicks"
+            teleportButton();
+        });
+
+        yesBtn.addEventListener('click', () => {
+            successDiv.classList.remove('hidden');
+            const end = Date.now() + 5000;
+            const colors = ['#ec4899', '#f43f5e', '#ffffff'];
+
+            (function frame() {
+                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors });
+                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        });
+    </script>
+</body>
+</html>
